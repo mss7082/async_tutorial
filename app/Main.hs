@@ -9,6 +9,7 @@ import Data.Foldable
 import Data.Text (Text)
 import qualified Data.Text as T
 import Say
+import Control.Applicative ((<|>))
 
 getURL :: Text -> IO Text
 getURL url = do
@@ -63,7 +64,10 @@ main = do
   -- print eResult
   ----------------------------------------------------------
   (page1, page2, page3) <- runConcurrently $ 
-    (,,) <$> Concurrently (getURL "url1") <*> Concurrently (getURL "url2") <*> Concurrently (getURL "url3")
+    (,,) 
+      <$> Concurrently (getURL "url1") 
+      <*> (Concurrently (getURL "url2a") <|> Concurrently (getURL "url2b"))
+      <*> Concurrently (getURL "url3")
   print page1
   print page2
   print page3
